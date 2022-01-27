@@ -10,10 +10,16 @@ async function findLargestAbsoluteIncrease(): Promise<void> {
 
     // Mapping
     for (let i = 0; i < dataArray.length; i++) {
-        const { Value, Name }: StockRecord = dataArray[i]
+        let Value = dataArray[i].Value
+        let Name = dataArray[i].Name
 
+        // Error handling
+        if (!Value || !Name) {
+            return console.error("Table doesn't have a Value or Name collumn")
+        }
         if (!isValidRecord(Value)) continue
 
+        // Setting values
         if (stocks.hasOwnProperty(Name)) {
             stocks[Name].lastRecord = Value
         } else {
