@@ -3,22 +3,26 @@ import path from "path"
 
 function findLargestAbsoluteIncrease(): void {
     console.time()
-    const dataArray = csv2Array(`./values.csv`)
+    const data = fs
+        .readFileSync(path.resolve(__dirname, "./values.csv"))
+        .toString()
     let stocks: any = {}
     let largest = null
 
-    // Mapping
-    for (let i = 0; i < dataArray.length; i++) {
-        const { name, value } = dataArray[i]
+    // Mapping and filtering
+    data.split("\n")
+        .filter((row, index) => index !== 0 && isValidRecord(row.split(",")[3]))
+        .map((row) => {
+            const [name, data, notes, value, change] = row.split(",")
 
-        if (stocks.hasOwnProperty(name)) {
-            stocks[name].lastRecord = value
-        } else {
-            stocks[name] = {
-                firstRecord: value,
+            if (stocks.hasOwnProperty(name)) {
+                stocks[name].lastRecord = value
+            } else {
+                stocks[name] = {
+                    firstRecord: value,
+                }
             }
-        }
-    }
+        })
 
     // Find largest
     for (const stock in stocks) {
@@ -47,21 +51,6 @@ function findLargestAbsoluteIncrease(): void {
 
 function isValidRecord(value: string) {
     return !isNaN(parseFloat(value))
-}
-
-function csv2Array(filePath: string): StockRecord[] {
-    const data = fs.readFileSync(path.resolve(__dirname, filePath)).toString()
-
-    return data
-        .split("\n")
-        .filter((row, index) => index !== 0 && isValidRecord(row.split(",")[3]))
-        .map((row) => {
-            const fields = row.split(",")
-            return {
-                name: fields[0],
-                value: fields[3],
-            }
-        })
 }
 
 findLargestAbsoluteIncrease()
