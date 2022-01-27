@@ -1,30 +1,21 @@
 import fs from "fs"
 import path from "path"
-import csv from "csvtojson"
 
-async function findLargestAbsoluteIncrease(): Promise<void> {
+function findLargestAbsoluteIncrease(): void {
     console.time()
-    const dataArray = await csv2Array(`./values.csv`)
+    const dataArray = csv2Array(`./values.csv`)
     let stocks: any = {}
     let largest = null
 
     // Mapping
     for (let i = 0; i < dataArray.length; i++) {
-        let Value = dataArray[i].Value
-        let Name = dataArray[i].Name
+        const { name, value } = dataArray[i]
 
-        // Error handling
-        if (!Value || !Name) {
-            return console.error("Table doesn't have a Value or Name collumn")
-        }
-        if (!isValidRecord(Value)) continue
-
-        // Setting values
-        if (stocks.hasOwnProperty(Name)) {
-            stocks[Name].lastRecord = Value
+        if (stocks.hasOwnProperty(name)) {
+            stocks[name].lastRecord = value
         } else {
-            stocks[Name] = {
-                firstRecord: Value,
+            stocks[name] = {
+                firstRecord: value,
             }
         }
     }
@@ -58,15 +49,19 @@ function isValidRecord(value: string) {
     return !isNaN(parseFloat(value))
 }
 
-async function csv2Array(filePath: string): Promise<any[]> {
-    try {
-        const data = fs
-            .readFileSync(path.resolve(__dirname, filePath))
-            .toString()
-        return await csv().fromString(data)
-    } catch (error: any) {
-        throw new Error(error)
-    }
+function csv2Array(filePath: string): StockRecord[] {
+    const data = fs.readFileSync(path.resolve(__dirname, filePath)).toString()
+
+    return data
+        .split("\n")
+        .filter((row, index) => index !== 0 && isValidRecord(row.split(",")[3]))
+        .map((row) => {
+            const fields = row.split(",")
+            return {
+                name: fields[0],
+                value: fields[3],
+            }
+        })
 }
 
 findLargestAbsoluteIncrease()
