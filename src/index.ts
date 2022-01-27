@@ -3,11 +3,11 @@ import path from "path"
 
 function findLargestAbsoluteIncrease(): void {
     console.time()
+    let stocks: any = {}
+    let largest = null
     const data = fs
         .readFileSync(path.resolve(__dirname, "./values.csv"))
         .toString()
-    let stocks: any = {}
-    let largest = null
 
     // Mapping and filtering
     data.split("\n")
@@ -27,20 +27,20 @@ function findLargestAbsoluteIncrease(): void {
     // Find largest
     for (const stock in stocks) {
         const values = stocks[stock]
-        let increase = +values.lastRecord - +values.firstRecord
+        let currentIncrease = +values.lastRecord - +values.firstRecord
 
         if (!largest) {
             largest = {
                 name: stock,
-                value: increase,
+                increase: currentIncrease,
             }
             continue
         }
 
-        if (increase > largest.value) {
+        if (currentIncrease > largest.increase) {
             largest = {
                 name: stock,
-                value: increase,
+                increase: currentIncrease,
             }
         }
     }
