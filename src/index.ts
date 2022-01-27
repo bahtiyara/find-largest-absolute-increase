@@ -44,7 +44,7 @@ async function findLargestAbsoluteIncrease(): Promise<void> {
         }
     }
 
-    console.log(largest?.name)
+    console.log("Stock with the largest absolute increase:", largest?.name)
     console.timeLog()
 }
 
