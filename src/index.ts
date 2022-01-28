@@ -3,8 +3,8 @@ import path from "path"
 
 function findLargestAbsoluteIncrease(): void {
     console.time()
-    let stocks: any = {}
-    let largest = null
+    let mappedStocks: MappedRecord = {}
+    let largest: StockRecord | null = null
     const data = fs
         .readFileSync(path.resolve(__dirname, "./values.csv"))
         .toString()
@@ -15,19 +15,20 @@ function findLargestAbsoluteIncrease(): void {
         .map((row) => {
             const [name, data, notes, value, change] = row.split(",")
 
-            if (stocks.hasOwnProperty(name)) {
-                stocks[name].lastRecord = value
+            if (mappedStocks.hasOwnProperty(name)) {
+                mappedStocks[name].lastRecord = value
             } else {
-                stocks[name] = {
+                mappedStocks[name] = {
                     firstRecord: value,
                 }
             }
         })
 
     // Find largest
-    for (const stock in stocks) {
-        const values = stocks[stock]
-        let currentIncrease = +values.lastRecord - +values.firstRecord
+    for (const stock in mappedStocks) {
+        const values = mappedStocks[stock]
+        let currentIncrease =
+            +(values.lastRecord || values.firstRecord) - +values.firstRecord
 
         if (!largest) {
             largest = {

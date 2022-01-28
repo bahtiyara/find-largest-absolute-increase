@@ -1,4 +1,11 @@
 type StockRecord = {
     name: string
-    value: string
+    increase: number
+}
+
+type MappedRecord = {
+    [stockName in T]: {
+        firstRecord: string
+        lastRecord?: string
+    }
 }
